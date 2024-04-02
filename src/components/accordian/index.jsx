@@ -1,39 +1,71 @@
-import { useState } from 'react'
-import data from './data';
-import './styles.css'
+import { useState } from "react";
+import data from "./data";
+import "./styles.css";
 // single selection
-// multiple selection   
-
-
+// multiple selection
 
 export default function Accordian() {
+  const [selected, setSelected] = useState(null);
+  const [enableMultiSelection, setEnableMultiSelection] = useState(false);
+  const [multiple, setMultiple] = useState([]);
 
-    const [selected, setSelected] = useState(null);
+  function handleSingleSelection(getCurrentId) {
+    setSelected(getCurrentId === selected ? null : getCurrentId);
+  }
 
-    function handleSingleSelection(getCurrentId) {
-        setSelected(getCurrentId===selected?null:getCurrentId );
+  function handleMultipleSelection(getCurrentId) {
+    let cpyMultiple=[...multiple];
+    const findIndexOfCurrentid=cpyMultiple.indexOf(getCurrentId);
+    console.log(findIndexOfCurrentid);
+    if(findIndexOfCurrentid===-1){
+      cpyMultiple.push(getCurrentId);
     }
-    console.log(selected);
-    return (
-        <div className='wrapper'>
-            <div className="accordian">
-                {
-                    data && data.length > 0 ?
-                        data.map(dataItem => 
-                        <div className='item'>
-                            <div onClick={()=>handleSingleSelection(dataItem.id)} className='title' >
-                                <h3>{dataItem.question}</h3>
-                                <span>+ </span>
-                                </div>
-                                {
-                                    selected===dataItem.id ? <div className='content'>{dataItem.answer}</div> : null
-                                }
-                            
-                        </div> )
-                        : <div> No data found</div>
-                }
-            </div>
+    else cpyMultiple.splice(findIndexOfCurrentid,1);
+    setMultiple(cpyMultiple);
+  }
 
-        </div>
-    )
+  console.log(selected,multiple);
+  return (
+    <div className="wrapper">
+      <button
+        onClick={
+             () => setEnableMultiSelection(!enableMultiSelection)
+        }
+      >
+        Enable multi selection
+      </button>
+      <div className="accordian">
+        {data && data.length > 0 ? (
+          data.map((dataItem) => (
+            <div className="item">
+              <div
+                onClick={
+                  enableMultiSelection
+                  ? () => handleMultipleSelection(dataItem.id)
+          
+                  
+                 : () => handleSingleSelection(dataItem.id)}
+                className="title"
+              >
+                <h3>{dataItem.question}</h3>
+                <span>+ </span>
+              </div>
+              {
+                enableMultiSelection ? 
+                multiple.indexOf(dataItem.id)!==-1  &&
+                <div className="content">{dataItem.answer}</div>
+                :selected === dataItem.id &&
+                <div className="content">{dataItem.answer}</div>
+              }
+              {/* {selected === dataItem.id || multiple.indexOf(dataItem.id)!==-1 ? (
+                <div className="content">{dataItem.answer}</div>
+              ) : null} */}
+            </div>
+          ))
+        ) : (
+          <div> No data found</div>
+        )}
+      </div>
+    </div>
+  );
 }
