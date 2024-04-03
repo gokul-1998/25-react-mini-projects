@@ -5,3 +5,5 @@ npm start
 ```
 
 - `npm i react-icons`
+
+- `npm i react-qr-code`
